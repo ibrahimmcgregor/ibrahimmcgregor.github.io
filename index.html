@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ibrahim McGregor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout concept: a mechatronics engineer's page. A hero with a live two-link arm that
+   idles on its own and follows the cursor, then report-style sections on a label rail. */
+:root {
+  --bg: #f1f4f2;
+  --panel: #fafbfa;
+  --ink: #101a17;
+  --muted: #52625c;
+  --rule: #c7d1cc;
+  --accent: #0b6b5d;
+  --signal: #d9480f;
+  --font-display: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Hanken Grotesk", "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c1512; --panel: #12201b; --ink: #e3ede8; --muted: #92a69d;
+    --rule: #273a33; --accent: #5cd0b5; --signal: #ff8a4c; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0c1512; --panel: #12201b; --ink: #e3ede8; --muted: #92a69d;
+  --rule: #273a33; --accent: #5cd0b5; --signal: #ff8a4c; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  padding-block: 28px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1040px; margin-inline: auto; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.05; font-weight: 700; }
+p { margin: 0; }
+a { color: var(--accent); text-underline-offset: 3px; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.label { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.fill { border-bottom: 1px dashed var(--accent); color: var(--accent); }
+.nowrap { white-space: nowrap; }
+
+/* Top bar */
+.top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 24px; padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
+
+/* Hero */
+.hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 32px 48px; align-items: center; padding-block: 44px 48px; }
+.hero h1 { font-size: clamp(2.8rem, 8.4vw, 5.6rem); letter-spacing: -0.02em; line-height: 0.95; }
+.hero .sub { font-family: var(--font-mono); font-size: 13px; color: var(--accent); letter-spacing: 0.04em; margin-bottom: 14px; }
+.hero .thesis { margin-top: 22px; font-size: clamp(1.1rem, 2.2vw, 1.3rem); line-height: 1.5; max-width: 30em; }
+.facts { display: grid; gap: 0; margin-top: 28px; border-top: 1px solid var(--rule); }
+.facts > div { display: grid; grid-template-columns: 10.5rem minmax(0, 1fr); gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--rule); font-size: 15px; }
+
+.rig { border: 1px solid var(--rule); background: var(--panel); min-width: 0; }
+.rig svg { display: block; width: 100%; height: auto; touch-action: pan-y; cursor: crosshair; }
+.rig .readout { display: flex; flex-wrap: wrap; gap: 4px 20px; padding: 10px 14px; border-top: 1px solid var(--rule); font-family: var(--font-mono); font-size: 12.5px; }
+.rig .readout b { font-weight: 500; color: var(--accent); }
+.rig .cap { padding: 0 14px 12px; font-size: 13px; color: var(--muted); }
+.s-ground { stroke: var(--rule); stroke-width: 2; }
+.s-reach { fill: none; stroke: var(--rule); stroke-width: 1.5; stroke-dasharray: 4 6; }
+.s-link { stroke: var(--ink); stroke-width: 12; stroke-linecap: round; fill: none; }
+.s-link-in { stroke: var(--panel); stroke-width: 4; stroke-linecap: round; fill: none; }
+.f-joint { fill: var(--panel); stroke: var(--ink); stroke-width: 3; }
+.f-base { fill: var(--ink); }
+.s-grip { stroke: var(--ink); stroke-width: 4; stroke-linecap: round; fill: none; }
+.s-target { stroke: var(--signal); stroke-width: 2; fill: none; }
+.f-target { fill: var(--signal); }
+
+/* Sections */
+section { border-top: 2px solid var(--ink); padding-block: 34px 44px; display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: 20px 40px; }
+section > .rail { min-width: 0; }
+section > .rail h2 { font-size: 1.9rem; margin-top: 6px; }
+.body { min-width: 0; display: grid; gap: 26px; }
+
+.lede { font-size: 1.15rem; line-height: 1.55; max-width: 36em; }
+.tablewrap { overflow-x: auto; border: 1px solid var(--rule); background: var(--panel); }
+table { border-collapse: collapse; width: 100%; min-width: 520px; font-size: 15px; }
+th, td { text-align: left; padding: 11px 16px; vertical-align: top; border-bottom: 1px solid var(--rule); }
+tr:last-child td { border-bottom: 0; }
+th { font-family: var(--font-mono); font-weight: 500; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+td:first-child { font-weight: 600; white-space: nowrap; }
+
+/* Autonomy ladder (a true sequence) */
+.ladder { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--rule); background: var(--panel); }
+.ladder > div { padding: 14px 16px; border-right: 1px solid var(--rule); display: grid; gap: 6px; align-content: start; }
+.ladder > div:last-child { border-right: 0; }
+.ladder .n { font-family: var(--font-mono); font-size: 12px; color: var(--accent); }
+.ladder h3 { font-size: 1.15rem; }
+.ladder p { font-size: 14px; color: var(--muted); line-height: 1.45; }
+
+.role-head { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: baseline; justify-content: space-between; }
+.role-head h3 { font-size: 1.7rem; }
+.list { margin: 0; padding-left: 1.1em; display: grid; gap: 8px; }
+.stamp-row { display: flex; gap: 20px; align-items: center; padding: 16px 18px; border: 1px solid var(--rule); background: var(--panel); }
+.stamp { flex: none; width: 76px; height: 76px; border-radius: 50%; border: 3px double var(--signal); color: var(--signal); display: grid; place-items: center; text-align: center; font-family: var(--font-mono); font-size: 9px; line-height: 1.25; letter-spacing: 0.06em; text-transform: uppercase; transform: rotate(-8deg); }
+
+.skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 24px; }
+.skills h3 { font-size: 1.2rem; margin-bottom: 8px; }
+.skills ul { margin: 0; padding-left: 1.1em; display: grid; gap: 4px; }
+.progress { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; max-width: 420px; }
+.progress div { height: 8px; background: var(--rule); }
+.progress div.on { background: var(--accent); }
+
+footer { border-top: 2px solid var(--ink); padding-top: 18px; display: flex; flex-wrap: wrap; gap: 10px 36px; }
+footer .mono { font-family: var(--font-mono); font-size: 14px; margin-top: 2px; }
+
+@media (max-width: 800px) {
+  .hero { grid-template-columns: minmax(0, 1fr); padding-block: 32px 36px; }
+  section { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .ladder { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .ladder > div:nth-child(2) { border-right: 0; }
+  .ladder > div:nth-child(-n+2) { border-bottom: 1px solid var(--rule); }
+  .facts > div { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .stamp-row { align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="top">
+    <span class="label">Portfolio · Mechatronics Engineering</span>
+    <span class="label">Ontario, Canada</span>
+  </div>
+
+  <header class="hero">
+    <div>
+      <p class="sub">MECHATRONICS ENGINEERING STUDENT · ONTARIO TECH UNIVERSITY</p>
+      <h1>Ibrahim McGregor</h1>
+      <p class="thesis">Mechatronics Engineer, pursuing to excel in all aspects of engineering</p>
+      <div class="facts">
+        <div><span class="label">Studying</span><span>Mechatronics Engineering, Ontario Tech University</span></div>
+        <div><span class="label">Co-op Placements</span><span>Curtiss-Wright Nuclear Canada</span></div>
+        <div><span class="label">Current Project</span><span>A personal robot arm, aiming for autonomy</span></div>
+        <div><span class="label">Licensure</span><span>P.Eng with PEO, Competency-Based Assessment in progress</span></div>
+      </div>
+    </div>
+    <div class="rig">
+      <svg id="arm" viewBox="0 0 520 340" role="img" aria-label="A two-link robot arm that reaches for targets on its own and follows the cursor when you move over it">
+        <line class="s-ground" x1="20" y1="300" x2="500" y2="300"/>
+        <path id="reach" class="s-reach" d=""/>
+        <g id="target">
+          <circle class="s-target" r="11" cx="0" cy="0"/>
+          <circle class="f-target" r="3" cx="0" cy="0"/>
+        </g>
+        <rect class="f-base" x="112" y="288" width="56" height="12" rx="2"/>
+        <line id="l1" class="s-link" x1="0" y1="0" x2="0" y2="0"/>
+        <line id="l2" class="s-link" x1="0" y1="0" x2="0" y2="0"/>
+        <line id="l1i" class="s-link-in" x1="0" y1="0" x2="0" y2="0"/>
+        <line id="l2i" class="s-link-in" x1="0" y1="0" x2="0" y2="0"/>
+        <g id="grip"><line id="g1" class="s-grip" x1="0" y1="0" x2="0" y2="0"/><line id="g2" class="s-grip" x1="0" y1="0" x2="0" y2="0"/></g>
+        <circle id="j0" class="f-joint" r="9" cx="140" cy="290"/>
+        <circle id="j1" class="f-joint" r="8" cx="0" cy="0"/>
+      </svg>
+      <div class="readout">
+        <span>mode <b id="ro-mode">autonomous</b></span>
+        <span>θ1 <b id="ro-t1">0°</b></span>
+        <span>θ2 <b id="ro-t2">0°</b></span>
+      </div>
+      <p class="cap">Illustrative two-link arm solving inverse kinematics. It picks its own targets until you move over it.</p>
+    </div>
+  </header>
+
+  <section id="arm-project">
+    <div class="rail"><div class="label">In progress</div><h2>Personal robot arm</h2></div>
+    <div class="body">
+      <p class="lede">A robot arm that I am building myself revolved around one goal in mind: running a task remotely without a person steering it.</p>
+      <div>
+        <div class="label" style="margin-bottom:8px">What autonomy takes</div>
+        <div class="ladder">
+          <div><span class="n">1</span><h3>Move</h3><p>Command the joints to a pose and hold it accurately.</p></div>
+          <div><span class="n">2</span><h3>Sense</h3><p>Measure where the arm is and what is in front of it.</p></div>
+          <div><span class="n">3</span><h3>Plan</h3><p>Choose a path to a goal that avoids collisions.</p></div>
+          <div><span class="n">4</span><h3>Act</h3><p>Complete a useful job unprompted, then repeat it.</p></div>
+        </div>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Spec</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td>Current stage</td><td>Power Management and Circuitry</td></tr>
+            <tr><td>Degrees of freedom</td><td>3 Degrees of Freedom</td></tr>
+            <tr><td>Actuators</td><td>775 Pro Redline Brushed Motors</td></tr>
+            <tr><td>Controller</td><td>SparkMAX Motor Controllers, Arduino MKRZERO Logic Controller</td></tr>
+            <tr><td>Sensors</td><td>CV Camera</td></tr>
+            <tr><td>Software</td><td>SolidWorks, Arduino and Python</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="coop">
+    <div class="rail"><div class="label">Co-op</div><h2>Curtiss-Wright Nuclear Canada</h2></div>
+    <div class="body">
+      <div>
+        <div class="role-head">
+          <h3>Test Engineer, Co-op</h3>
+          <span class="label nowrap">September 2025 – August 2026</span>
+        </div>
+      </div>
+      <p class="lede">Qualification testing for nuclear-grade components: planning the test, running it, and signing off the record that proves the result.</p>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Test type</th><th>What it demonstrates</th><th>My part</th></tr></thead>
+          <tbody>
+            <tr><td>Seismic</td><td>The component keeps working through and after earthquake loading.</td><td>Setup, execution and test records</td></tr>
+            <tr><td>Electrical</td><td>Electrical performance meets the specified requirements.</td><td>Wiring, measurement and data capture</td></tr>
+            <tr><td>Hydrostatic / pressure</td><td>The pressure boundary holds at the specified test pressure.</td><td>Test setup, monitoring and results</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul class="list">
+        <li>Worked on all forms of systems and parts to qualify them to nuclear grade standards ranging from relays, to industrial motors and actuators.</li>
+        <li>Worked within quality assurance requirements and maintained the documentation each test needed.</li>
+        <li>Achieved my Testing Engineer Stamp with the company to signify the quality and efficiency of my work.</li>
+      </ul>
+      <div class="stamp-row">
+        <div class="stamp" aria-hidden="true">Testing<br>Engineer<br>Stamp</div>
+        <p>Earned a Testing Engineer Stamp, which authorizes me to sign off test documentation, conduct testing, and qualify equipment to nuclear standards myself. A sign-off means I stand behind what the record says.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="skills">
+    <div class="rail"><div class="label">Skills</div><h2>What I bring</h2></div>
+    <div class="body">
+      <div class="skills">
+        <div><h3>Test and qualification</h3><ul><li>Seismic testing and qualification</li><li>Electrical testing and analysis</li><li>Hydrostatic and pressure testing</li></ul></div>
+        <div><h3>Mechatronics</h3><ul><li>CAD, GD&amp;T, Assembly and CAM</li><li>Robot arm design and control</li><li>Python, C++, Java, Arduino, MATLAB, Simulink</li></ul></div>
+        <div><h3>Quality</h3><ul><li>QA documentation</li><li>Test record sign-off</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="path">
+    <div class="rail"><div class="label">Credentials</div><h2>Education, certifications and licensure</h2></div>
+    <div class="body">
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Credential</th><th>Issued by</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Mechatronics Engineering degree</td><td>Ontario Tech University</td><td>Expected April 2028</td></tr>
+            <tr><td>SolidWorks Certification (CSWA)</td><td>Dassault Systèmes</td><td>Certified, 2026</td></tr>
+            <tr><td>SolidWorks Certification (CSWP)</td><td>Dassault Systèmes</td><td>In progress</td></tr>
+            <tr><td>Python Programming Certification</td><td>Coursera</td><td>Certified, 2026</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="display:grid;gap:10px">
+        <h3 style="font-size:1.4rem">Working toward the P.Eng.</h3>
+        <p>I am pursuing licensure with Professional Engineers Ontario and working through the Competency-Based Assessment, which asks for documented evidence of engineering competence.</p>
+        <div class="progress" aria-hidden="true"><div class="on"></div><div class="on"></div><div></div><div></div></div>
+        <p class="label">Competency-Based Assessment · in progress</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div><div class="label">Email</div><div class="mono">mcgregoribrahim@gmail.com</div></div>
+    <div><div class="label">LinkedIn</div><div class="mono"><a href="https://www.linkedin.com/in/ibrahim-mcgregor/">linkedin.com/in/ibrahim-mcgregor</a></div></div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var svg = document.getElementById("arm");
+  if (!svg) return;
+  var OX = 140, OY = 290, L1 = 130, L2 = 105, W = 520, H = 340;
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function $(id) { return document.getElementById(id); }
+  var l1 = $("l1"), l2 = $("l2"), l1i = $("l1i"), l2i = $("l2i"), j1 = $("j1"),
+      g1 = $("g1"), g2 = $("g2"), tgt = $("target"), reachEl = $("reach"),
+      roMode = $("ro-mode"), roT1 = $("ro-t1"), roT2 = $("ro-t2");
+
+  var R = L1 + L2;
+  reachEl.setAttribute("d", "M " + (OX + R) + " " + OY + " A " + R + " " + R + " 0 0 0 " + (OX - R) + " " + OY);
+
+  function clamp(v, a, b) { return Math.min(Math.max(v, a), b); }
+  function solve(x, y) {
+    x = clamp(x, OX - 40, W - 10);
+    y = clamp(y, 20, OY - 10);
+    var dx = x - OX, dy = y - OY;
+    var d = clamp(Math.hypot(dx, dy), Math.abs(L1 - L2) + 2, R - 2);
+    var a = Math.atan2(dy, dx);
+    var b = Math.acos(clamp((L1 * L1 + d * d - L2 * L2) / (2 * L1 * d), -1, 1));
+    var e = Math.acos(clamp((L1 * L1 + L2 * L2 - d * d) / (2 * L1 * L2), -1, 1));
+    return { t1: a - b, t2: Math.PI - e, x: x, y: y };
+  }
+
+  var cur = { t1: -1.0, t2: 1.5 };
+  var goal = { t1: -1.0, t2: 1.5, x: OX + 120, y: OY - 120 };
+  var manual = false, manualTimer = null;
+
+  function put(el, x1, y1, x2, y2) {
+    el.setAttribute("x1", x1); el.setAttribute("y1", y1);
+    el.setAttribute("x2", x2); el.setAttribute("y2", y2);
+  }
+  function draw() {
+    var p1x = OX + L1 * Math.cos(cur.t1), p1y = OY + L1 * Math.sin(cur.t1);
+    var a2 = cur.t1 + cur.t2;
+    var p2x = p1x + L2 * Math.cos(a2), p2y = p1y + L2 * Math.sin(a2);
+    put(l1, OX, OY, p1x, p1y); put(l1i, OX, OY, p1x, p1y);
+    put(l2, p1x, p1y, p2x, p2y); put(l2i, p1x, p1y, p2x, p2y);
+    j1.setAttribute("cx", p1x); j1.setAttribute("cy", p1y);
+    var ux = Math.cos(a2), uy = Math.sin(a2), nx = -uy, ny = ux;
+    put(g1, p2x + nx * 7, p2y + ny * 7, p2x + nx * 7 + ux * 16, p2y + ny * 7 + uy * 16);
+    put(g2, p2x - nx * 7, p2y - ny * 7, p2x - nx * 7 + ux * 16, p2y - ny * 7 + uy * 16);
+    tgt.setAttribute("transform", "translate(" + goal.x + " " + goal.y + ")");
+    roT1.textContent = Math.round(-cur.t1 * 180 / Math.PI) + "°";
+    roT2.textContent = Math.round(cur.t2 * 180 / Math.PI) + "°";
+    roMode.textContent = manual ? "manual" : "autonomous";
+  }
+  function aim(x, y) {
+    var s = solve(x, y);
+    goal.t1 = s.t1; goal.t2 = s.t2; goal.x = s.x; goal.y = s.y;
+    if (reduce) { cur.t1 = goal.t1; cur.t2 = goal.t2; draw(); }
+  }
+  function pickTarget() {
+    var phi = -(0.15 + Math.random() * 1.2);
+    var r = R * (0.5 + Math.random() * 0.42);
+    aim(OX + r * Math.cos(phi), OY + r * Math.sin(phi));
+  }
+  function toSvg(e) {
+    var r = svg.getBoundingClientRect();
+    return { x: (e.clientX - r.left) / r.width * W, y: (e.clientY - r.top) / r.height * H };
+  }
+  function onMove(e) {
+    manual = true;
+    clearTimeout(manualTimer);
+    var p = toSvg(e);
+    aim(p.x, p.y);
+    manualTimer = setTimeout(function () { manual = false; pickTarget(); draw(); }, 1800);
+  }
+  svg.addEventListener("pointermove", onMove);
+  svg.addEventListener("pointerdown", onMove);
+  svg.addEventListener("pointerleave", function () {
+    clearTimeout(manualTimer);
+    manualTimer = setTimeout(function () { manual = false; pickTarget(); draw(); }, 600);
+  });
+
+  aim(OX + 130, OY - 110);
+  if (reduce) { cur.t1 = goal.t1; cur.t2 = goal.t2; draw(); return; }
+  draw();
+  setInterval(function () { if (!manual) pickTarget(); }, 2800);
+  (function tick() {
+    cur.t1 += (goal.t1 - cur.t1) * 0.07;
+    cur.t2 += (goal.t2 - cur.t2) * 0.07;
+    draw();
+    requestAnimationFrame(tick);
+  })();
+})();
+</script>
+</body>
+</html>
